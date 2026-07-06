@@ -1,0 +1,10 @@
+build/
+.dart_tool/
+.idea/
+.flutter-plugins-dependencies
+ios/
+integration_test/
+test/
+*.iml
+.gitignore
+README.md
