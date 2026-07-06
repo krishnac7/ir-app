@@ -1,5 +1,5 @@
 # ── Stage 1: build Flutter web ──────────────────────────────────────────────
-FROM ghcr.io/cirruslabs/flutter:3.32.0 AS builder
+FROM ghcr.io/cirruslabs/flutter:3.44.4 AS builder
 
 WORKDIR /app
 
