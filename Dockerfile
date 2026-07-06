@@ -14,7 +14,7 @@ RUN curl -fsSL \
       https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.4-stable.tar.xz \
       -o /tmp/flutter.tar.xz \
     && mkdir -p /opt \
-    && tar -xJf /tmp/flutter.tar.xz -C /opt \
+    && tar -xJf /tmp/flutter.tar.xz -C /opt --no-same-owner \
     && rm /tmp/flutter.tar.xz \
     && flutter config --no-analytics \
     && flutter config --enable-web
