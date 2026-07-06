@@ -1,23 +1,23 @@
 # ── Stage 1: build Flutter web ──────────────────────────────────────────────
 FROM debian:bookworm-slim AS builder
 
-ARG FLUTTER_VERSION=3.32.4
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH="$FLUTTER_HOME/bin:$PATH"
-# Suppress Flutter analytics and root warnings
-ENV FLUTTER_ANALYTICS_DISABLE=1
-ENV PUB_HOSTED_URL=https://pub.dartlang.org
+ENV FLUTTER_ROOT=$FLUTTER_HOME
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      curl git ca-certificates unzip xz-utils \
+      curl ca-certificates unzip xz-utils git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Flutter SDK (web only — skip android/gradle precache)
-RUN git clone --depth 1 --branch ${FLUTTER_VERSION} \
-      https://github.com/flutter/flutter.git ${FLUTTER_HOME} \
+# Download Flutter SDK as tarball (avoids git depth/chown issues in rootless builds)
+RUN curl -fsSL \
+      https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.4-stable.tar.xz \
+      -o /tmp/flutter.tar.xz \
+    && mkdir -p /opt \
+    && tar -xJf /tmp/flutter.tar.xz -C /opt \
+    && rm /tmp/flutter.tar.xz \
     && flutter config --no-analytics \
-    && flutter config --enable-web \
-    && flutter precache --web --no-android --no-ios --no-linux --no-macos --no-windows --no-fuchsia
+    && flutter config --enable-web
 
 WORKDIR /app
 COPY . .
