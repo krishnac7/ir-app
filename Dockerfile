@@ -1,28 +1,33 @@
 # ── Stage 1: build Flutter web ──────────────────────────────────────────────
-FROM ghcr.io/cirruslabs/flutter:3.44.4 AS builder
+FROM debian:bookworm-slim AS builder
+
+ARG FLUTTER_VERSION=3.32.4
+ENV FLUTTER_HOME=/opt/flutter
+ENV PATH="$FLUTTER_HOME/bin:$PATH"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl git ca-certificates unzip xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Flutter SDK
+RUN git clone --depth 1 --branch ${FLUTTER_VERSION} \
+      https://github.com/flutter/flutter.git ${FLUTTER_HOME} \
+    && flutter config --no-analytics \
+    && flutter config --enable-web \
+    && flutter precache --web
 
 WORKDIR /app
-
-# Copy source
 COPY . .
 
-# Enable web and build
-RUN flutter config --enable-web \
- && flutter pub get \
+RUN flutter pub get \
  && flutter build web --release
 
 # ── Stage 2: serve with nginx ────────────────────────────────────────────────
 FROM nginx:1.27-alpine
 
-# Remove default nginx content
 RUN rm -rf /usr/share/nginx/html/*
-
-# Copy built web assets
 COPY --from=builder /app/build/web /usr/share/nginx/html
-
-# Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
-
 CMD ["nginx", "-g", "daemon off;"]
