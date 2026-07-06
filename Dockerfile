@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Download Flutter SDK as tarball (avoids git depth/chown issues in rootless builds)
 RUN curl -fsSL \
-      https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.4-stable.tar.xz \
+      https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.38.10-stable.tar.xz \
       -o /tmp/flutter.tar.xz \
     && mkdir -p /opt \
     && tar -xJf /tmp/flutter.tar.xz -C /opt --no-same-owner \
